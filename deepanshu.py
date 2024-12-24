@@ -3,7 +3,7 @@ from textblob import TextBlob
 
 # Hugging Face API credentials
 API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn"  # Summarization model
-API_TOKEN = "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"
+API_TOKEN = ""
 
 # Function to simplify and enhance the input
 def simplify_prompt(user_input):
