@@ -18,7 +18,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("jolly-joysticks")
+        self.setWindowTitle("ChatGPT-like Interface")
         self.setGeometry(200, 200, 1200, 800)
 
         # Main widget and layout
@@ -34,7 +34,7 @@ class MainWindow(QMainWindow):
             """
             QScrollArea {
                 border: none;
-                background-color: #6d6d9e; /* Purple background */
+                background-color: #2a2d37; /* Dark background */
             }
             QScrollBar:vertical {
                 background: #4c4c6d;
@@ -62,14 +62,14 @@ class MainWindow(QMainWindow):
 
         # Input text box (multiline)
         self.input_box = QTextEdit()
-        self.input_box.setPlaceholderText("Type your prompt here...")
+        self.input_box.setPlaceholderText("Type your message...")
         self.input_box.setFixedHeight(75)  # Adjusted height of the input box
         self.input_box.setStyleSheet(
             """
             QTextEdit {
-                background-color: #4c4c6d;
+                background-color: #3c3f50;
                 color: white;
-                border: 2px solid #8a8abc;
+                border: 1px solid #505c6b;
                 border-radius: 15px;
                 padding: 12px;
                 font-family: 'Segoe UI', sans-serif;
@@ -77,13 +77,13 @@ class MainWindow(QMainWindow):
                 transition: all 0.3s ease;
             }
             QTextEdit:hover {
-                border: 2px solid #a39cd4;
+                border: 1px solid #76c3ff;
             }
             QTextEdit:focus {
-                border: 2px solid #a39cd4;
-                background-color: #5a5a7d;
+                border: 1px solid #76c3ff;
+                background-color: #4a4f63;
                 outline: none;
-                box-shadow: 0 0 15px rgba(163, 156, 212, 0.6); /* Subtle glowing effect */
+                box-shadow: 0 0 15px rgba(118, 195, 255, 0.6); /* Subtle glowing effect */
             }
             """
         )
@@ -95,7 +95,7 @@ class MainWindow(QMainWindow):
         self.send_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #8a8abc;
+                background-color: #4c8eaf;
                 color: white;
                 border-radius: 15px;
                 padding: 10px 20px;
@@ -103,7 +103,7 @@ class MainWindow(QMainWindow):
                 font-size: 16px;
             }
             QPushButton:hover {
-                background-color: #a39cd4;
+                background-color: #6fa4c9;
             }
             """
         )
@@ -115,7 +115,7 @@ class MainWindow(QMainWindow):
         self.clear_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #ff6b6b;
+                background-color: #ff6347;
                 color: white;
                 border-radius: 15px;
                 padding: 10px 20px;
@@ -123,7 +123,7 @@ class MainWindow(QMainWindow):
                 font-size: 16px;
             }
             QPushButton:hover {
-                background-color: #ff8787;
+                background-color: #ff7d68;
             }
             """
         )
@@ -144,7 +144,7 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(
             """
             QMainWindow {
-                background-color: #6d6d9e; /* Purple background for the entire window */
+                background-color: #1e222d; /* Dark background for the entire window */
                 border-radius: 15px;
             }
             """
@@ -184,8 +184,8 @@ class MainWindow(QMainWindow):
         user_label.setStyleSheet(
             """
             QLabel {
-                background-color: #8a8abc; /* Light purple for user text */
-                color: black;
+                background-color: #4c8eaf; /* Chat bubble color */
+                color: white;
                 border-radius: 25px;
                 padding: 15px;
                 font-family: 'Segoe UI', sans-serif;
