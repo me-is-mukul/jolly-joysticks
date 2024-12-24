@@ -1,12 +1,15 @@
+import markdown
+from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtGui import QMovie
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QVBoxLayout, QWidget, QLineEdit, QLabel, QScrollArea, QPushButton
+    QApplication, QMainWindow, QVBoxLayout, QWidget, QTextEdit, QLabel, QScrollArea, 
+    QPushButton, QHBoxLayout
 )
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
 import sys
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
+
 load_dotenv()
 genai.configure(api_key=os.getenv("API_KEY"))
 model = genai.GenerativeModel("gemini-1.5-flash")
@@ -43,10 +46,6 @@ class MainWindow(QMainWindow):
                 min-height: 30px;
                 border-radius: 5px;
             }
-            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-                background: none;
-                border: none;
-            }
             """
         )
 
@@ -57,12 +56,17 @@ class MainWindow(QMainWindow):
         self.scroll_area.setWidget(self.output_container)
         self.layout.addWidget(self.scroll_area)
 
-        # Input text box
-        self.input_box = QLineEdit()
-        self.input_box.setPlaceholderText("Type your prompt here and press Enter...")
+        # Input and control container
+        self.input_control_container = QHBoxLayout()
+        self.layout.addLayout(self.input_control_container)
+
+        # Input text box (multiline)
+        self.input_box = QTextEdit()
+        self.input_box.setPlaceholderText("Type your prompt here...")
+        self.input_box.setFixedHeight(75)  # Adjusted height of the input box
         self.input_box.setStyleSheet(
             """
-            QLineEdit {
+            QTextEdit {
                 background-color: #4c4c6d;
                 color: white;
                 border: 2px solid #8a8abc;
@@ -72,10 +76,10 @@ class MainWindow(QMainWindow):
                 font-size: 18px;
                 transition: all 0.3s ease;
             }
-            QLineEdit:hover {
+            QTextEdit:hover {
                 border: 2px solid #a39cd4;
             }
-            QLineEdit:focus {
+            QTextEdit:focus {
                 border: 2px solid #a39cd4;
                 background-color: #5a5a7d;
                 outline: none;
@@ -83,8 +87,58 @@ class MainWindow(QMainWindow):
             }
             """
         )
-        self.input_box.returnPressed.connect(self.process_input)
-        self.layout.addWidget(self.input_box)
+        self.input_box.keyPressEvent = self.custom_key_press_event  # Override key press event
+        self.input_control_container.addWidget(self.input_box)
+
+        # Send button
+        self.send_button = QPushButton("Send")
+        self.send_button.setStyleSheet(
+            """
+            QPushButton {
+                background-color: #8a8abc;
+                color: white;
+                border-radius: 15px;
+                padding: 10px 20px;
+                font-family: 'Segoe UI', sans-serif;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: #a39cd4;
+            }
+            """
+        )
+        self.send_button.clicked.connect(self.process_input)
+        self.input_control_container.addWidget(self.send_button)
+
+        # Clear Chat button
+        self.clear_button = QPushButton("Clear Chat")
+        self.clear_button.setStyleSheet(
+            """
+            QPushButton {
+                background-color: #ff6b6b;
+                color: white;
+                border-radius: 15px;
+                padding: 10px 20px;
+                font-family: 'Segoe UI', sans-serif;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: #ff8787;
+            }
+            """
+        )
+        self.clear_button.clicked.connect(self.clear_chat)
+        self.input_control_container.addWidget(self.clear_button)
+
+        # Overlay for progress indicator
+        self.overlay = QWidget(self)
+        self.overlay.setGeometry(self.rect())
+        self.overlay.setVisible(False)
+
+        self.progress_label = QLabel(self.overlay)
+        self.progress_label.setAlignment(Qt.AlignCenter)
+        self.spinner = QMovie("media/animation.gif")  # Replace with a valid spinner GIF path
+        self.progress_label.setMovie(self.spinner)
 
         # Set overall window style
         self.setStyleSheet(
@@ -96,8 +150,30 @@ class MainWindow(QMainWindow):
             """
         )
 
+        # Typing effect setup
+        self.typing_timer = QTimer(self)
+        self.typing_timer.timeout.connect(self.typing_effect)
+
+        self.current_text = ""
+        self.index = 0
+        self.typing_speed = 50  # Speed of typing in milliseconds
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.overlay.setGeometry(self.rect())
+        self.progress_label.setGeometry(0, 0, self.overlay.width(), self.overlay.height())
+
+    def custom_key_press_event(self, event):
+        if event.key() == Qt.Key_Return and not event.modifiers() == Qt.ShiftModifier:
+            self.process_input()
+        elif event.key() == Qt.Key_Return and event.modifiers() == Qt.ShiftModifier:
+            cursor = self.input_box.textCursor()
+            cursor.insertText("\n")
+        else:
+            QTextEdit.keyPressEvent(self.input_box, event)
+
     def process_input(self):
-        prompt = self.input_box.text().strip()
+        prompt = self.input_box.toPlainText().strip()
         if not prompt:
             return
 
@@ -120,33 +196,78 @@ class MainWindow(QMainWindow):
         )
         self.output_layout.addWidget(user_label)
 
-        # Simulate system response
-        response = f"{model.generate_content(prompt).text}"  # Replace with your processing logic
-        response_label = QLabel(response)
-        response_label.setWordWrap(True)
-        response_label.setAlignment(Qt.AlignLeft)
-        response_label.setStyleSheet(
-            """
-            QLabel {
-                background-color: #3e3e5e; /* Grey for system text */
-                color: white;
-                border-radius: 25px;
-                padding: 15px;
-                font-family: 'Segoe UI', sans-serif;
-                font-size: 16px;
-                margin-bottom: 15px;
-            }
-            """
-        )
-        self.output_layout.addWidget(response_label)
+        # Show progress indicator
+        self.overlay.setVisible(True)
+        self.spinner.start()
+        QApplication.processEvents()
 
-        # Scroll to bottom
-        QApplication.processEvents()  # Ensure all events are processed
-        self.scroll_area.verticalScrollBar().setValue(self.scroll_area.verticalScrollBar().maximum())
+        # Clear the input box after processing the input
+        self.input_box.clear()  # This line clears the text box
 
-        # Clear the input box
-        self.input_box.clear()
+        # Simulate system response with a delay
+        QTimer.singleShot(2000, lambda: self.generate_response(prompt))
 
+
+    def generate_response(self, prompt):
+        try:
+            # Simulate AI response (Replace with actual model logic)
+            response = f"{model.generate_content(prompt).text}"
+
+            # Convert markdown to HTML
+            html_response = markdown.markdown(response)
+
+            # Prepare the response edit field with HTML content
+            self.current_text = html_response
+            self.index = 0
+            self.response_edit = QTextEdit()
+            self.response_edit.setReadOnly(True)
+            self.response_edit.setAlignment(Qt.AlignLeft)
+            self.response_edit.setStyleSheet(
+                """
+                QTextEdit {
+                    background-color: #3e3e5e;
+                    color: white;
+                    border-radius: 25px;
+                    padding: 15px;
+                    font-family: 'Segoe UI', sans-serif;
+                    font-size: 16px;
+                    margin-bottom: 15px;
+                }
+                """
+            )
+            self.response_edit.setHtml(self.current_text)
+            self.output_layout.addWidget(self.response_edit)
+
+            # Stop spinner before starting the typing effect
+            self.spinner.stop()
+            self.overlay.setVisible(False)
+
+            # Start typing effect
+            self.response_edit.clear()
+            self.typing_timer.start(self.typing_speed)
+
+        except Exception as e:
+            # If an error occurs, display it as a regular message
+            response = f"Error: {e}"
+            self.current_text = response
+            self.index = 0
+            self.typing_timer.start(self.typing_speed)
+
+    def typing_effect(self):
+        if self.index < len(self.current_text):
+            self.response_edit.insertPlainText(self.current_text[self.index])
+            self.index += 1
+        else:
+            # Stop the timer once the text is fully typed out
+            self.typing_timer.stop()
+
+    def clear_chat(self):
+        # Remove all widgets from the output layout
+        while self.output_layout.count():
+            widget = self.output_layout.takeAt(0).widget()
+            if widget:
+                widget.deleteLater()
+        self.scroll_area.verticalScrollBar().setValue(0)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
