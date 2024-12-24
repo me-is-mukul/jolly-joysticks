@@ -1,4 +1,5 @@
 import markdown
+from markdown.extensions.fenced_code import FencedCodeExtension
 from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QMovie
 from PyQt5.QtWidgets import (
@@ -210,15 +211,43 @@ class MainWindow(QMainWindow):
 
     def generate_response(self, prompt):
         try:
-            # Simulate AI response (Replace with actual model logic)
-            response = f"{model.generate_content(prompt).text}"
+            # Generate AI response
+            response = model.generate_content(prompt).text
 
-            # Convert markdown to HTML
-            html_response = markdown.markdown(response)
+            # Convert markdown to HTML with fenced code support
+            html_response = markdown.markdown(
+                response, extensions=["fenced_code"]
+            )
 
-            # Prepare the response edit field with HTML content
-            self.current_text = html_response
-            self.index = 0
+            # Add custom CSS for styling code blocks
+            styled_html = f"""
+            <html>
+            <head>
+                <style>
+                    body {{
+                        color: white;
+                        font-family: 'Segoe UI', sans-serif;
+                    }}
+                    pre {{
+                        background-color: #2d2d2d;
+                        color: #dcdcdc;
+                        border-radius: 8px;
+                        padding: 10px;
+                        overflow-x: auto;
+                    }}
+                    code {{
+                        font-family: 'Courier New', monospace;
+                        font-size: 14px;
+                    }}
+                </style>
+            </head>
+            <body>
+                {html_response}
+            </body>
+            </html>
+            """
+
+            # Create a QTextEdit to display the formatted response
             self.response_edit = QTextEdit()
             self.response_edit.setReadOnly(True)
             self.response_edit.setAlignment(Qt.AlignLeft)
@@ -235,23 +264,21 @@ class MainWindow(QMainWindow):
                 }
                 """
             )
-            self.response_edit.setHtml(self.current_text)
+
+            # Set the styled HTML content
+            self.response_edit.setHtml(styled_html)
             self.output_layout.addWidget(self.response_edit)
 
-            # Stop spinner before starting the typing effect
+            # Stop spinner
             self.spinner.stop()
             self.overlay.setVisible(False)
 
-            # Start typing effect
-            self.response_edit.clear()
-            self.typing_timer.start(self.typing_speed)
-
         except Exception as e:
-            # If an error occurs, display it as a regular message
-            response = f"Error: {e}"
-            self.current_text = response
-            self.index = 0
-            self.typing_timer.start(self.typing_speed)
+            # Handle exceptions gracefully
+            error_label = QLabel(f"Error: {e}")
+            error_label.setStyleSheet("color: red;")
+            self.output_layout.addWidget(error_label)
+
 
     def typing_effect(self):
         if self.index < len(self.current_text):
