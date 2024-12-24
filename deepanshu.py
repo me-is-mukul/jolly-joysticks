@@ -1,9 +1,14 @@
 import requests
 from textblob import TextBlob
+from dotenv import load_dotenv
+import os
+
+# Load the .env file
+load_dotenv()
 
 # Hugging Face API credentials
 API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn"  # Summarization model
-API_TOKEN = ""
+API_TOKEN = os.getenv("API_TOKEN")  # Get token from the .env file
 
 # Function to simplify and enhance the input
 def simplify_prompt(user_input):
