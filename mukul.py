@@ -1,8 +1,15 @@
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QWidget, QLineEdit, QLabel, QScrollArea)
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QVBoxLayout, QWidget, QLineEdit, QLabel, QScrollArea, QPushButton
+)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 import sys
-
+import os
+from dotenv import load_dotenv
+import google.generativeai as genai
+load_dotenv()
+genai.configure(api_key=os.getenv("API_KEY"))
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -45,7 +52,7 @@ class MainWindow(QMainWindow):
 
         self.output_container = QWidget()
         self.output_layout = QVBoxLayout()
-        self.output_layout.setSpacing(15)  # Increased spacing between output bubbles for a more spacious feel
+        self.output_layout.setSpacing(15)  # Increased spacing between output bubbles
         self.output_container.setLayout(self.output_layout)
         self.scroll_area.setWidget(self.output_container)
         self.layout.addWidget(self.scroll_area)
@@ -72,7 +79,7 @@ class MainWindow(QMainWindow):
                 border: 2px solid #a39cd4;
                 background-color: #5a5a7d;
                 outline: none;
-                box-shadow: 0 0 15px rgba(163, 156, 212, 0.6); /* Subtle glowing effect on focus */
+                box-shadow: 0 0 15px rgba(163, 156, 212, 0.6); /* Subtle glowing effect */
             }
             """
         )
@@ -90,44 +97,59 @@ class MainWindow(QMainWindow):
         )
 
     def process_input(self):
-        # Get the user input
-        prompt = self.input_box.text().strip()  # Remove leading/trailing whitespace
+        prompt = self.input_box.text().strip()
         if not prompt:
-            return  # Ignore empty input
+            return
 
-        # Process the prompt (you can customize this part)
-        output = f"{prompt}"
-
-        # Create a styled QLabel for the output
-        output_label = QLabel(output)
-        output_label.setWordWrap(True)  # Allow multiline text
-        output_label.setAlignment(Qt.AlignLeft)
-        output_label.setStyleSheet(
+        # User's input bubble
+        user_label = QLabel(prompt)
+        user_label.setWordWrap(True)
+        user_label.setAlignment(Qt.AlignRight)
+        user_label.setStyleSheet(
             """
             QLabel {
-                background-color: #3e3e5e; /* Grey background for the text bubble */
-                color: white; /* Text color */
-                border: none; /* No border for simplicity */
-                border-radius: 25px; /* Oval shape */
-                padding: 15px; /* Space around text */
+                background-color: #8a8abc; /* Light purple for user text */
+                color: black;
+                border-radius: 25px;
+                padding: 15px;
                 font-family: 'Segoe UI', sans-serif;
                 font-size: 16px;
-                width: auto; /* Dynamically adjust the width */
-                min-width: 150px; /* Minimum width for a single line */
-                margin-bottom: 15px; /* Spacing between text bubbles */
-                transition: all 0.3s ease-in-out; /* Smooth transition for hover effect */
-            }
-            QLabel:hover {
-                background-color: #5a5a7d; /* Slightly lighter color on hover */
-                box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); /* Glow effect on hover */
+                margin-bottom: 15px;
             }
             """
         )
-        output_label.setFont(QFont("Segoe UI", 16))
+        self.output_layout.addWidget(user_label)
 
-        # Add the label to the layout
-        self.output_layout.addWidget(output_label)
+        # Simulate system response
+        response = f"{model.generate_content(prompt).text}"  # Replace with your processing logic
+        response_label = QLabel(response)
+        response_label.setWordWrap(True)
+        response_label.setAlignment(Qt.AlignLeft)
+        response_label.setStyleSheet(
+            """
+            QLabel {
+                background-color: #3e3e5e; /* Grey for system text */
+                color: white;
+                border-radius: 25px;
+                padding: 15px;
+                font-family: 'Segoe UI', sans-serif;
+                font-size: 16px;
+                margin-bottom: 15px;
+            }
+            """
+        )
+        self.output_layout.addWidget(response_label)
+
+        # Scroll to bottom
+        QApplication.processEvents()  # Ensure all events are processed
+        self.scroll_area.verticalScrollBar().setValue(self.scroll_area.verticalScrollBar().maximum())
 
         # Clear the input box
         self.input_box.clear()
 
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
