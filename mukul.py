@@ -247,13 +247,13 @@ class MainWindow(QMainWindow):
             </html>
             """
 
-            # Create a QTextEdit to display the formatted response
-            self.response_edit = QTextEdit()
-            self.response_edit.setReadOnly(True)
-            self.response_edit.setAlignment(Qt.AlignLeft)
-            self.response_edit.setStyleSheet(
+            # Create a QLabel to display the formatted response
+            response_label = QLabel()
+            response_label.setWordWrap(True)
+            response_label.setAlignment(Qt.AlignLeft)
+            response_label.setStyleSheet(
                 """
-                QTextEdit {
+                QLabel {
                     background-color: #3e3e5e;
                     color: white;
                     border-radius: 25px;
@@ -264,10 +264,11 @@ class MainWindow(QMainWindow):
                 }
                 """
             )
+            response_label.setTextInteractionFlags(Qt.NoTextInteraction)  # Prevent text selection
 
             # Set the styled HTML content
-            self.response_edit.setHtml(styled_html)
-            self.output_layout.addWidget(self.response_edit)
+            response_label.setText(styled_html)
+            self.output_layout.addWidget(response_label)
 
             # Stop spinner
             self.spinner.stop()
@@ -278,6 +279,7 @@ class MainWindow(QMainWindow):
             error_label = QLabel(f"Error: {e}")
             error_label.setStyleSheet("color: red;")
             self.output_layout.addWidget(error_label)
+
 
 
     def typing_effect(self):
