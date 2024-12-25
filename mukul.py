@@ -19,7 +19,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("ChatGPT-like Interface")
+        self.setWindowTitle("Jolly-Joysticks")
         self.setGeometry(200, 200, 1200, 800)
 
         # Main widget and layout
@@ -92,7 +92,7 @@ class MainWindow(QMainWindow):
         self.input_control_container.addWidget(self.input_box)
 
         # Send button
-        self.send_button = QPushButton("Send")
+        self.send_button = QPushButton("Refine Prompt + Send")
         self.send_button.setStyleSheet(
             """
             QPushButton {
