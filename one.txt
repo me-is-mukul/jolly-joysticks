@@ -1,0 +1,13 @@
+sudo apt update
+sudo apt install default-jre -y
+sudo apt install graphviz -y
+wget https://sourceforge.net/projects/plantuml/files/plantuml.jar -O plantuml.jar
+sudo apt install python3 python3-pip -y
+mkdir plantuml_diagrams
+cd plantuml_diagrams
+sudo apt install plantuml -y
+sudo apt update
+sudo apt install default-jre graphviz -y
+pip install spacy
+python3 -m spacy download en_core_web_sm
+pip install openai  # Optional: Use OpenAI API for advanced NLP

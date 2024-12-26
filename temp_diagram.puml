@@ -1,0 +1,17 @@
+@startuml
+actor User
+usecase "Book" as UC1
+usecase "Ticket" as UC2
+usecase "Cancel" as UC3
+usecase "Ticket" as UC2
+usecase "And" as UC5
+usecase "View" as UC6
+usecase "Ticket" as UC2
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC2
+User --> UC5
+User --> UC6
+User --> UC2
+@enduml
