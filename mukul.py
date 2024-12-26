@@ -2,14 +2,12 @@ import markdown
 from markdown.extensions.fenced_code import FencedCodeExtension
 from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QMovie
-from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QVBoxLayout, QWidget, QTextEdit, QLabel, QScrollArea, 
-    QPushButton, QHBoxLayout
-)
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QWidget, QTextEdit, QLabel, QScrollArea, QPushButton, QHBoxLayout)
 import sys
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
+from deepanshu import *
 
 load_dotenv()
 genai.configure(api_key=os.getenv("API_KEY"))
@@ -108,7 +106,7 @@ class MainWindow(QMainWindow):
             }
             """
         )
-        self.send_button.clicked.connect(self.process_input)
+        self.send_button.clicked.connect(self.process_input_new)
         self.input_control_container.addWidget(self.send_button)
 
         # Clear Chat button
@@ -207,6 +205,42 @@ class MainWindow(QMainWindow):
 
         # Simulate system response with a delay
         QTimer.singleShot(2000, lambda: self.generate_response(prompt))
+
+    def process_input_new(self):
+        prompt = self.input_box.toPlainText().strip()
+        if not prompt:
+            return
+
+        # User's input bubble
+        user_label = QLabel(f"User Prompt: {prompt}\nRefined prompt: {simplify_prompt(prompt)}")
+        user_label.setWordWrap(True)
+        user_label.setAlignment(Qt.AlignRight)
+        user_label.setStyleSheet(
+            """
+            QLabel {
+                background-color: #4c8eaf; /* Chat bubble color */
+                color: white;
+                border-radius: 25px;
+                padding: 15px;
+                font-family: 'Segoe UI', sans-serif;
+                font-size: 16px;
+                margin-bottom: 15px;
+            }
+            """
+        )
+        self.output_layout.addWidget(user_label)
+
+        # Show progress indicator
+        self.overlay.setVisible(True)
+        self.spinner.start()
+        QApplication.processEvents()
+
+        # Clear the input box after processing the input
+        self.input_box.clear()  # This line clears the text box
+
+        # Simulate system response with a delay
+        QTimer.singleShot(2000, lambda: self.generate_response(simplify_prompt(prompt)))
+
 
 
     def generate_response(self, prompt):
