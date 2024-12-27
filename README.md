@@ -81,6 +81,16 @@ brew install plantuml
 #### Step 3: Download PlantUML
 Download the `plantuml.jar` file from the [PlantUML website](https://plantuml.com/download).
 
+## Setup Your API TOKKENS
+1. Together API : [Together API get](https://www.together.ai/)
+2. Gemini API : [Gemini API get](https://ai.google.dev/gemini-api/docs/api-key)
+3. Hugging Face API : [Hugging Face API get](https://huggingface.co/docs/huggingface_hub/index)
+### IN YOUR `.env` FILE.. SETUP ->
+```
+API_KEY_GEMINI = "KEY"
+API_KEY_TOGETHER = "KEY"
+API_KEY_HUGGING_FACE = "KEY"
+```
 
 # ALL SET.. GO AND RUN THE `main.py` FILE
 
