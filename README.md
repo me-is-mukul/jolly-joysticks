@@ -10,6 +10,10 @@ https://github.com/user-attachments/assets/39cd91cb-74d6-47c1-9758-8d323cff36d5
 
 ## Key Features
 
+
+- **Assignment Generator**: Generates assignment solution when you provide keywords in your prompt like ["solve", "assignment", "solution"], it automatically opens up gateway for file upload and lateron provides a button for downloading the assignment file
+- **UseCase Diagram**: Generates Usecase flowcharts and diagram on prompt. and offers unlimited chances to generate UML code.
+- **Prompt Refining**: 
 - **Unified AI Integration**: Combine and operate multiple AI models under one interface.
 - **PyQt-Powered GUI**: An intuitive and user-friendly interface inspired by modern IDEs like VS Code.
 - **Customizable Workflows**: Tailor workflows by leveraging multiple AI models for different tasks.
