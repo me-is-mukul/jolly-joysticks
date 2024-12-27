@@ -1,17 +1,20 @@
 @startuml
 actor User
-usecase "Book" as UC1
-usecase "Ticket" as UC2
-usecase "Cancel" as UC3
-usecase "Ticket" as UC2
-usecase "And" as UC5
-usecase "View" as UC6
-usecase "Ticket" as UC2
-User --> UC1
-User --> UC2
-User --> UC3
-User --> UC2
-User --> UC5
-User --> UC6
-User --> UC2
+entity "Array" as Array
+entity "Bubble Sort Algorithm" as BubbleSort
+
+User -> Array: Initialize array with elements
+Array -> BubbleSort: Pass array to BubbleSort
+BubbleSort -> BubbleSort: Set i = 0
+BubbleSort -> BubbleSort: For i = 0 to n-1
+alt If i < n-1
+    BubbleSort -> BubbleSort: Set j = 0
+    BubbleSort -> BubbleSort: For j = 0 to n-i-1
+    alt If array[j] > array[j+1]
+        BubbleSort -> Array: Swap array[j] and array[j+1]
+    end
+    BubbleSort -> BubbleSort: Increment j
+end
+BubbleSort -> BubbleSort: Increment i
+BubbleSort -> Array: Return sorted array
 @enduml

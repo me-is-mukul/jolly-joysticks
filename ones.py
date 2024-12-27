@@ -23,7 +23,6 @@ def generate_plantuml_code(description):
                 while actions_start < len(words):
                     use_cases.append(words[actions_start].strip(",").capitalize())
                     actions_start += 1
-
         # Generate PlantUML code
         plantuml_code = "@startuml\n"
         for actor in actors:
@@ -77,3 +76,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
