@@ -4,6 +4,8 @@ from textblob import TextBlob
 from dotenv import load_dotenv
 import os
 import together
+from tkinter import Tk
+from tkinter.filedialog import asksaveasfilename
 
 load_dotenv()   
 
@@ -44,6 +46,31 @@ def response_from_gemini(text):
     response = model.generate_content(text).text
 
     return response
+
+def save(local_file_path):
+# Read the local file
+    try:
+        with open(local_file_path, "rb") as file:
+            file_data = file.read()
+    
+    # Open a dialog box for file saving
+        Tk().withdraw()  # Hides the root window
+        save_path = asksaveasfilename(
+            defaultextension=".png",
+            filetypes=[("PNG files", "*.png"), ("All files", "*.*")],
+            title="Save Image As"
+        )
+    
+        if save_path:
+            with open(save_path, "wb") as file:
+                file.write(file_data)
+            print(f"Image successfully saved to {save_path}.")
+        else:
+            print("Save operation canceled by the user.")
+    except FileNotFoundError:
+        print("The specified file was not found. Please check the path.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 
 def response_from_together(text):

@@ -1,29 +1,75 @@
-```uml
-@startuml
-title Bubble Sort Algorithm
-participant Main
-participant BubbleSort
-participant Array
+```mermaid
+graph LR
+    A[Input: Unsorted Array] --> B[Heapify]
+    B --> C[Extract Root]
+    C --> D[Heapify Subtree]
+    D --> E[Repeat C-D]
+    E --> F[Sorted Array]
+```
 
-Main->>BubbleSort: Create Array
-BubbleSort->>Array: Initialize Array
-Array->>BubbleSort: Get Length of Array
-BubbleSort->>BubbleSort: Set Flag to True
-BubbleSort->>BubbleSort: Set Swap to False
-BubbleSort->>BubbleSort: Loop Through Array
-BubbleSort->>BubbleSort: Loop Through Array (Inner Loop)
-BubbleSort->>Array: Compare Elements
-Array->>BubbleSort: Get Elements
-BubbleSort->>BubbleSort: Check if Elements are in Order
-BubbleSort->>BubbleSort: If Elements are not in Order
-BubbleSort->>Array: Swap Elements
-Array->>BubbleSort: Update Array
-BubbleSort->>BubbleSort: Set Swap to True
-BubbleSort->>BubbleSort: Decrement Flag
-BubbleSort->>BubbleSort: If Flag is True
-BubbleSort->>BubbleSort: Loop Through Array (Outer Loop)
-BubbleSort->>BubbleSort: Decrement Length of Array
-BubbleSort->>BubbleSort: If Length of Array is 1
-BubbleSort->>Main: Return Sorted Array
-@enduml
+```mermaid
+graph LR
+    A[Input: Unsorted Array] --> B[Build Max Heap]
+    B --> C[Extract Root]
+    C --> D[Heapify Subtree]
+    D --> E[Repeat C-D]
+    E --> F[Sorted Array]
+```
+
+```mermaid
+graph LR
+    A[Input: Unsorted Array] --> B[Heapify]
+    B --> C[Extract Root]
+    C --> D[Heapify Subtree]
+    D --> E[Repeat C-D]
+    E --> F[Sorted Array]
+    B[Heapify] -->|n/2| G[Heapify]
+    G -->|n/2| H[Heapify]
+    H -->|n/2| I[Heapify]
+    I -->|n/2| J[Heapify]
+    J -->|n/2| K[Heapify]
+    K -->|n/2| L[Heapify]
+    L -->|n/2| M[Heapify]
+    M -->|n/2| N[Heapify]
+    N -->|n/2| O[Heapify]
+    O -->|n/2| P[Heapify]
+    P -->|n/2| Q[Heapify]
+    Q -->|n/2| R[Heapify]
+    R -->|n/2| S[Heapify]
+    S -->|n/2| T[Heapify]
+    T -->|n/2| U[Heapify]
+    U -->|n/2| V[Heapify]
+    V -->|n/2| W[Heapify]
+    W -->|n/2| X[Heapify]
+    X -->|n/2| Y[Heapify]
+    Y -->|n/2| Z[Heapify]
+```
+
+```mermaid
+graph LR
+    A[Input: Unsorted Array] --> B[Build Max Heap]
+    B --> C[Extract Root]
+    C --> D[Heapify Subtree]
+    D --> E[Repeat C-D]
+    E --> F[Sorted Array]
+    B[Build Max Heap] -->|n/2| G[Build Max Heap]
+    G -->|n/2| H[Build Max Heap]
+    H -->|n/2| I[Build Max Heap]
+    I -->|n/2| J[Build Max Heap]
+    J -->|n/2| K[Build Max Heap]
+    K -->|n/2| L[Build Max Heap]
+    L -->|n/2| M[Build Max Heap]
+    M -->|n/2| N[Build Max Heap]
+    N -->|n/2| O[Build Max Heap]
+    O -->|n/2| P[Build Max Heap]
+    P -->|n/2| Q[Build Max Heap]
+    Q -->|n/2| R[Build Max Heap]
+    R -->|n/2| S[Build Max Heap]
+    S -->|n/2| T[Build Max Heap]
+    T -->|n/2| U[Build Max Heap]
+    U -->|n/2| V[Build Max Heap]
+    V -->|n/2| W[Build Max Heap]
+    W -->|n/2| X[Build Max Heap]
+    X -->|n/2| Y[Build Max Heap]
+    Y -->|n/2| Z[Build Max Heap]
 ```

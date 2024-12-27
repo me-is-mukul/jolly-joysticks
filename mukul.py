@@ -208,7 +208,7 @@ class MainWindow(QMainWindow):
             return
 
         # User's input bubble
-        user_label = QLabel(f"User Prompt: {prompt}\nRefined prompt: {simplify_prompt(prompt)}")
+        user_label = QLabel(f"User Prompt: {prompt}\nRefined prompt: {response_from_together(f"correct this prompt with no extra words: {prompt}")}")
         user_label.setWordWrap(True)
         user_label.setAlignment(Qt.AlignRight)
         user_label.setStyleSheet(
@@ -235,21 +235,21 @@ class MainWindow(QMainWindow):
         self.input_box.clear()  # This line clears the text box
 
         # Simulate system response with a delay
-        QTimer.singleShot(2000, lambda: self.generate_response(simplify_prompt(prompt)))
+        QTimer.singleShot(2000, lambda: self.generate_response(response_from_together(f"correct this prompt with no extra words : {prompt}")))
 
 
 
     def generate_response(self, prompt):
         if 'diagram' in prompt.lower() or 'image' in prompt.lower():
-            uml_code = response_from_together(f"give me a code that fullfill the prompt: {prompt}, make it extremely perfect in one shot and give only and only code in uml and no extra text")
+            uml_code = response_from_together(f"generate an extremely perfect uml flow diagram with no extra words and only the code for the prompt : {prompt}")
             with open("temp_diagram.puml", "w") as file:
                 file.write(uml_code)
             generate_diagram()
 
-
             image_path = "temp_diagram.png"
             image_label = QLabel()
             pixmap = QPixmap(image_path)
+            pixmap = pixmap.scaled(800, 600, Qt.KeepAspectRatio, Qt.SmoothTransformation)  # Optional scaling
             image_label.setPixmap(pixmap)
             image_label.setAlignment(Qt.AlignCenter)
             image_label.setStyleSheet(
@@ -262,7 +262,36 @@ class MainWindow(QMainWindow):
                 }
                 """
             )
-            self.output_layout.addWidget(image_label)
+
+            # Create the button below the image
+            button = QPushButton("Download Image")
+            button.setStyleSheet(
+                """
+                QPushButton {
+                    background-color: #808080;  /* Grey color */
+                    color: white;
+                    border-radius: 10px;
+                    padding: 10px 20px;
+                    font-family: 'Segoe UI', sans-serif;
+                    font-size: 16px;
+                    margin-top: 10px;  /* Space between the image and the button */
+                }
+                QPushButton:hover {
+                    background-color: #A9A9A9;  /* Slightly lighter grey on hover */
+                }
+                """
+            )
+            button.clicked.connect(lambda : save("temp_diagram.png")) 
+
+            # Create a vertical layout to arrange the image and button vertically
+            image_button_layout = QVBoxLayout()
+            image_button_layout.addWidget(image_label)
+            image_button_layout.addWidget(button)
+
+            # Add the layout to the output
+            image_container = QWidget()
+            image_container.setLayout(image_button_layout)
+            self.output_layout.addWidget(image_container)
 
             # Hide the progress spinner once the image is displayed
             self.spinner.stop()
