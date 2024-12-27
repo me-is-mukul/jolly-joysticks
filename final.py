@@ -3,12 +3,14 @@ import google.generativeai as genai
 from textblob import TextBlob
 from dotenv import load_dotenv
 import os
+import together
 
-load_dotenv()
+load_dotenv()   
 
 API_URL_HUGGING_FACE = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn"  # Summarization model
 API_KEY_HUGGING_FACE = os.getenv("API_KEY_HUGGING_FACE")  # Get token from the .env file
 API_KEY_GEMINI = os.getenv("API_KEY_GEMINI")
+API_KEY_TOGETHER = os.getenv("API_KEY_TOGETHER")
 
 
 # Function to simplify and enhance the input
@@ -42,6 +44,14 @@ def response_from_gemini(text):
     response = model.generate_content(text).text
 
     return response
+
+
+def response_from_together(text):
+    client = together.Together(api_key=API_KEY_TOGETHER)
+    completion = client.chat.completions.create(model="meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo", messages=[{"role": "user", "content": text}])
+    return completion.choices[0].message.content
+
+    
     
 if __name__ == "__main__":
     user_text = "Give me a code of star pattern in cpp"

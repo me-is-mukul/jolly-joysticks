@@ -1,11 +1,13 @@
 import markdown
 from markdown.extensions.fenced_code import FencedCodeExtension
 from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtGui import QMovie, QPixmap  # Add QPixmap here
 from PyQt5.QtGui import QMovie
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QWidget, QTextEdit, QLabel, QScrollArea, QPushButton, QHBoxLayout)
 import sys
 import os
 from final import *
+from ones import *
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -238,75 +240,103 @@ class MainWindow(QMainWindow):
 
 
     def generate_response(self, prompt):
-        try:
-            # Generate AI response
-            response =response_from_gemini(prompt)
+        if 'diagram' in prompt.lower() or 'image' in prompt.lower():
+            uml_code = response_from_together(f"give me a code that fullfill the prompt: {prompt}, make it extremely perfect in one shot and give only and only code in uml and no extra text")
+            with open("temp_diagram.puml", "w") as file:
+                file.write(uml_code)
+            generate_diagram()
 
-            # Convert markdown to HTML with fenced code support
-            html_response = markdown.markdown(
-                response, extensions=["fenced_code"]
-            )
 
-            # Add custom CSS for styling code blocks
-            styled_html = f"""
-            <html>
-            <head>
-                <style>
-                    body {{
-                        color: white;
-                        font-family: 'Segoe UI', sans-serif;
-                    }}
-                    pre {{
-                        background-color: #2d2d2d;
-                        color: #dcdcdc;
-                        border-radius: 8px;
-                        padding: 10px;
-                        overflow-x: auto;
-                    }}
-                    code {{
-                        font-family: 'Courier New', monospace;
-                        font-size: 14px;
-                    }}
-                </style>
-            </head>
-            <body>
-                {html_response}
-            </body>
-            </html>
-            """
-
-            # Create a QLabel to display the formatted response
-            response_label = QLabel()
-            response_label.setWordWrap(True)
-            response_label.setAlignment(Qt.AlignLeft)
-            response_label.setStyleSheet(
+            image_path = "temp_diagram.png"
+            image_label = QLabel()
+            pixmap = QPixmap(image_path)
+            image_label.setPixmap(pixmap)
+            image_label.setAlignment(Qt.AlignCenter)
+            image_label.setStyleSheet(
                 """
                 QLabel {
-                    background-color: #3e3e5e;
-                    color: white;
-                    border-radius: 25px;
-                    padding: 15px;
-                    font-family: 'Segoe UI', sans-serif;
-                    font-size: 16px;
+                    background-color: #2d2d2d;  /* Dark background for the image container */
+                    border-radius: 10px;
+                    padding: 20px;
                     margin-bottom: 15px;
                 }
                 """
             )
-            response_label.setTextInteractionFlags(Qt.NoTextInteraction)  # Prevent text selection
+            self.output_layout.addWidget(image_label)
 
-            # Set the styled HTML content
-            response_label.setText(styled_html)
-            self.output_layout.addWidget(response_label)
-
-            # Stop spinner
+            # Hide the progress spinner once the image is displayed
             self.spinner.stop()
             self.overlay.setVisible(False)
+        else:
+            try:
+                # Generate AI response
+                response =response_from_gemini(prompt)
 
-        except Exception as e:
-            # Handle exceptions gracefully
-            error_label = QLabel(f"Error: {e}")
-            error_label.setStyleSheet("color: red;")
-            self.output_layout.addWidget(error_label)
+                # Convert markdown to HTML with fenced code support
+                html_response = markdown.markdown(
+                    response, extensions=["fenced_code"]
+                )
+
+                # Add custom CSS for styling code blocks
+                styled_html = f"""
+                <html>
+                <head>
+                    <style>
+                        body {{
+                            color: white;
+                            font-family: 'Segoe UI', sans-serif;
+                        }}
+                        pre {{
+                            background-color: #2d2d2d;
+                            color: #dcdcdc;
+                            border-radius: 8px;
+                            padding: 10px;
+                            overflow-x: auto;
+                        }}
+                        code {{
+                            font-family: 'Courier New', monospace;
+                            font-size: 14px;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    {html_response}
+                </body>
+                </html>
+                """
+
+                # Create a QLabel to display the formatted response
+                response_label = QLabel()
+                response_label.setWordWrap(True)
+                response_label.setAlignment(Qt.AlignLeft)
+                response_label.setStyleSheet(
+                    """
+                    QLabel {
+                        background-color: #3e3e5e;
+                        color: white;
+                        border-radius: 25px;
+                        padding: 15px;
+                        font-family: 'Segoe UI', sans-serif;
+                        font-size: 16px;
+                        margin-bottom: 15px;
+                    }
+                    """
+                )
+                response_label.setTextInteractionFlags(Qt.NoTextInteraction)  # Prevent text selection
+
+                # Set the styled HTML content
+                response_label.setText(styled_html)
+                self.output_layout.addWidget(response_label)
+
+                # Stop spinner
+                self.spinner.stop()
+                self.overlay.setVisible(False)
+
+            except Exception as e:
+                # Handle exceptions gracefully
+                error_label = QLabel(f"Error: {e}")
+                error_label.setStyleSheet("color: red;")
+                self.output_layout.addWidget(error_label)
 
 
 

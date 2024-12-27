@@ -1,20 +1,29 @@
+```uml
 @startuml
-actor User
-entity "Array" as Array
-entity "Bubble Sort Algorithm" as BubbleSort
+title Bubble Sort Algorithm
+participant Main
+participant BubbleSort
+participant Array
 
-User -> Array: Initialize array with elements
-Array -> BubbleSort: Pass array to BubbleSort
-BubbleSort -> BubbleSort: Set i = 0
-BubbleSort -> BubbleSort: For i = 0 to n-1
-alt If i < n-1
-    BubbleSort -> BubbleSort: Set j = 0
-    BubbleSort -> BubbleSort: For j = 0 to n-i-1
-    alt If array[j] > array[j+1]
-        BubbleSort -> Array: Swap array[j] and array[j+1]
-    end
-    BubbleSort -> BubbleSort: Increment j
-end
-BubbleSort -> BubbleSort: Increment i
-BubbleSort -> Array: Return sorted array
+Main->>BubbleSort: Create Array
+BubbleSort->>Array: Initialize Array
+Array->>BubbleSort: Get Length of Array
+BubbleSort->>BubbleSort: Set Flag to True
+BubbleSort->>BubbleSort: Set Swap to False
+BubbleSort->>BubbleSort: Loop Through Array
+BubbleSort->>BubbleSort: Loop Through Array (Inner Loop)
+BubbleSort->>Array: Compare Elements
+Array->>BubbleSort: Get Elements
+BubbleSort->>BubbleSort: Check if Elements are in Order
+BubbleSort->>BubbleSort: If Elements are not in Order
+BubbleSort->>Array: Swap Elements
+Array->>BubbleSort: Update Array
+BubbleSort->>BubbleSort: Set Swap to True
+BubbleSort->>BubbleSort: Decrement Flag
+BubbleSort->>BubbleSort: If Flag is True
+BubbleSort->>BubbleSort: Loop Through Array (Outer Loop)
+BubbleSort->>BubbleSort: Decrement Length of Array
+BubbleSort->>BubbleSort: If Length of Array is 1
+BubbleSort->>Main: Return Sorted Array
 @enduml
+```
