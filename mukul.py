@@ -8,6 +8,7 @@ import sys
 import os
 from final import *
 from ones import *
+from auto import *
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -240,7 +241,47 @@ class MainWindow(QMainWindow):
 
 
     def generate_response(self, prompt):
-        if 'diagram' in prompt.lower() or 'image' in prompt.lower():
+        if 'assignment' in prompt.lower() or 'solution' in prompt.lower() or 'solve' in prompt.lower():
+            question_pdf = search_pdf()
+            questions = read_questions_from_pdf(question_pdf)
+            with ThreadPoolExecutor() as executor:
+                qa_list = list(executor.map(process_question, questions))
+            output_docx = 'solutions.docx'
+            print(questions)
+            create_docx(qa_list, output_docx)
+
+            # Create and add the button to the layout
+            button = QPushButton("Download PDF")
+            button.setStyleSheet(
+                """
+                QPushButton {
+                    background-color: #808080;  /* Grey color */
+                    color: white;
+                    border-radius: 10px;
+                    padding: 10px 20px;
+                    font-family: 'Segoe UI', sans-serif;
+                    font-size: 16px;
+                    margin-top: 10px;  /* Space between the image and the button */
+                }
+                QPushButton:hover {
+                    background-color: #A9A9A9;  /* Slightly lighter grey on hover */
+                }
+                """
+            )
+            button.clicked.connect(lambda: save_docx(output_docx))
+
+            # Add the button to the layout
+            self.output_layout.addWidget(button)
+
+            # Stop the spinner and hide the overlay
+            self.spinner.stop()
+            self.overlay.setVisible(False)
+
+    # Handle other cases (e.g., 'diagram' in prompt)
+            
+
+
+        elif 'diagram' in prompt.lower() or 'image' in prompt.lower():
             uml_code = response_from_together(f"generate an extremely perfect uml flow diagram with no extra words and only the code for the prompt : {prompt}")
             with open("temp_diagram.puml", "w") as file:
                 file.write(uml_code)

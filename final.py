@@ -6,6 +6,7 @@ import os
 import together
 from tkinter import Tk
 from tkinter.filedialog import asksaveasfilename
+from tkinter.filedialog import askopenfilename
 
 load_dotenv()   
 
@@ -71,6 +72,47 @@ def save(local_file_path):
         print("The specified file was not found. Please check the path.")
     except Exception as e:
         print(f"An error occurred: {e}")
+
+def save_docx(local_file_path):
+    try:
+        # Read the local DOCX file
+        with open(local_file_path, "rb") as file:
+            file_data = file.read()
+
+        # Open a dialog box for file saving
+        Tk().withdraw()  # Hides the root window
+        save_path = asksaveasfilename(
+            defaultextension=".docx",
+            filetypes=[("DOCX files", "*.docx"), ("All files", "*.*")],
+            title="Save file As"
+        )
+        
+        if save_path:
+            # Write the file data to the new file location
+            with open(save_path, "wb") as file:
+                file.write(file_data)
+            print(f"File successfully saved to {save_path}.")
+        else:
+            print("Save operation canceled by the user.")
+    except FileNotFoundError:
+        print("The specified file was not found. Please check the path.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+def search_pdf():
+    # Open a file dialog to search for a PDF file
+    Tk().withdraw()  # Hides the root window
+    pdf_path = askopenfilename(
+        title="Select a PDF File",
+        filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")]
+    )
+    
+    if pdf_path:
+        print(f"PDF file selected: {pdf_path}")
+        return pdf_path
+    else:
+        print("No file selected.")
+        return None
 
 
 def response_from_together(text):
