@@ -1,8 +1,9 @@
 # jolly-joysticks
-
 ## Codejam Project : FusionAI
 https://github.com/user-attachments/assets/39cd91cb-74d6-47c1-9758-8d323cff36d5
 
+# WORKFLOW DIAGRAM
+![flowchart](https://github.com/user-attachments/assets/5b353b56-224b-470b-b346-d57cae0463df)
 # FusionAI
 
 **FusionAI** is a versatile desktop client designed to integrate and harness the power of multiple AI models seamlessly on cross platform (windows, max & linux). Built using **Python** and featuring a sleek **PyQt-based GUI**, this tool centralizes diverse AI functionalities into a single platform, enabling users to interact with various models efficiently. 
