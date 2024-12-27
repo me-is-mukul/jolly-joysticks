@@ -5,13 +5,7 @@ from PyQt5.QtGui import QMovie
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QWidget, QTextEdit, QLabel, QScrollArea, QPushButton, QHBoxLayout)
 import sys
 import os
-from dotenv import load_dotenv
-import google.generativeai as genai
-from deepanshu import *
-
-load_dotenv()
-genai.configure(api_key=os.getenv("API_KEY"))
-model = genai.GenerativeModel("gemini-1.5-flash")
+from final import *
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -246,7 +240,7 @@ class MainWindow(QMainWindow):
     def generate_response(self, prompt):
         try:
             # Generate AI response
-            response = model.generate_content(prompt).text
+            response =response_from_gemini(prompt)
 
             # Convert markdown to HTML with fenced code support
             html_response = markdown.markdown(

@@ -13,7 +13,7 @@ API_KEY_GEMINI = os.getenv("API_KEY_GEMINI")
 
 # Function to simplify and enhance the input
 def simplify_prompt(user_input):
-    headers = {"Authorization": f"Bearer {API_TOKEN}"}
+    headers = {"Authorization": f"Bearer {API_KEY_HUGGING_FACE}"}
     payload = {
         "inputs": user_input,
         "parameters": {
@@ -23,7 +23,7 @@ def simplify_prompt(user_input):
         }
     }
 
-    response = requests.post(API_URL, headers=headers, json=payload)
+    response = requests.post(API_URL_HUGGING_FACE, headers=headers, json=payload)
     if response.status_code == 200:
         result = response.json()
         return result[0]["summary_text"]  # Simplified or enhanced text
@@ -39,7 +39,7 @@ def response_from_gemini(text):
 
     genai.configure(api_key = API_KEY_GEMINI)
     model = genai.GenerativeModel("gemini-1.5-flash")
-    response = model.generate_content(text)
+    response = model.generate_content(text).text
 
     return response
     
